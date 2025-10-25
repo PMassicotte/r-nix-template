@@ -39,11 +39,7 @@
         };
 
         # Shared R package list for both wrappers
-        rPackageList = with final.rPackages; [
-          languageserver
-          nvimcom
-          tidyverse
-        ];
+        rPackageList = with final.rPackages; [ languageserver nvimcom ];
 
         # Create rWrapper with packages (for LSP and R.nvim)
         wrappedR = final.rWrapper.override { packages = rPackageList; };
@@ -65,7 +61,8 @@
       templates = {
         default = {
           path = ./.;
-          description = "R development environment with nvimcom and R.nvim integration";
+          description =
+            "R development environment with nvimcom and R.nvim integration";
           welcomeText = ''
             # R Nix Development Environment
 

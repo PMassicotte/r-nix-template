@@ -32,7 +32,6 @@ This will drop you into a shell with R and all packages available.
 - **R** with the following packages:
   - languageserver (for LSP support)
   - nvimcom (for R.nvim integration)
-  - tidyverse
 - **radian** - A modern R console with syntax highlighting and auto-completion
 
 ## Customization
@@ -43,7 +42,6 @@ To add more R packages, edit `flake.nix` and modify the `rPackageList`:
 rPackageList = with final.rPackages; [
   languageserver
   nvimcom
-  tidyverse
   # Add your packages here
 ];
 ```
