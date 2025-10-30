@@ -39,7 +39,13 @@
         };
 
         # Shared R package list for both wrappers
-        rPackageList = with final.rPackages; [ languageserver nvimcom ];
+        rPackageList = with final.rPackages; [
+          languageserver
+          nvimcom
+          lintr
+          fs
+          cli
+        ];
 
         # Create rWrapper with packages (for LSP and R.nvim)
         wrappedR = final.rWrapper.override { packages = rPackageList; };
@@ -72,9 +78,10 @@
             - Enter the shell with `nix develop`
 
             ## What's included
-            - R with languageserver, nvimcom, and tidyverse
+            - R with languageserver, nvimcom, lintr, fs, and cli
             - radian (modern R console)
             - Configured for R.nvim integration
+            - Pre-configured .lintr file with opinionated linting rules
           '';
         };
       };
