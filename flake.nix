@@ -8,20 +8,28 @@
     flake = false;
   };
 
-  outputs = { self, ... }@inputs:
-
+  outputs =
+    { self, ... }@inputs:
     let
-      supportedSystems =
-        [ "x86_64-linux" "aarch64-linux" "x86_64-darwin" "aarch64-darwin" ];
-      forEachSupportedSystem = f:
-        inputs.nixpkgs.lib.genAttrs supportedSystems (system:
+      supportedSystems = [
+        "x86_64-linux"
+        "aarch64-linux"
+        "x86_64-darwin"
+        "aarch64-darwin"
+      ];
+      forEachSupportedSystem =
+        f:
+        inputs.nixpkgs.lib.genAttrs supportedSystems (
+          system:
           f {
             pkgs = import inputs.nixpkgs {
               inherit system;
               overlays = [ inputs.self.overlays.default ];
             };
-          });
-    in {
+          }
+        );
+    in
+    {
       overlays.default = final: prev: rec {
         # Build nvimcom manually from R.nvim source
         nvimcom = final.rPackages.buildRPackage {
@@ -29,7 +37,11 @@
           src = inputs.rNvim;
           sourceRoot = "source/nvimcom";
 
-          buildInputs = with final; [ R gcc gnumake ];
+          buildInputs = with final; [
+            R
+            gcc
+            gnumake
+          ];
 
           meta = {
             description = "R.nvim communication package";
@@ -40,35 +52,37 @@
 
         # Shared R package list for both wrappers
         rPackageList = with final.rPackages; [
-          languageserver
-          nvimcom
-          lintr
-          fs
           cli
+          cyclocomp
+          fs
+          languageserver
+          lintr
+          nvimcom
         ];
 
         # Create rWrapper with packages (for LSP and R.nvim)
         wrappedR = final.rWrapper.override { packages = rPackageList; };
 
         # Create radianWrapper with same packages (for interactive use)
-        wrappedRadian =
-          final.radianWrapper.override { packages = rPackageList; };
+        wrappedRadian = final.radianWrapper.override { packages = rPackageList; };
       };
 
-      devShells = forEachSupportedSystem ({ pkgs }: {
-        default = pkgs.mkShellNoCC {
-          packages = with pkgs; [
-            wrappedR # R with packages for LSP
-            wrappedRadian # radian with packages for interactive use
-          ];
-        };
-      });
+      devShells = forEachSupportedSystem (
+        { pkgs }:
+        {
+          default = pkgs.mkShellNoCC {
+            packages = with pkgs; [
+              wrappedR # R with packages for LSP
+              wrappedRadian # radian with packages for interactive use
+            ];
+          };
+        }
+      );
 
       templates = {
         default = {
           path = ./.;
-          description =
-            "R development environment with nvimcom and R.nvim integration";
+          description = "R development environment with nvimcom and R.nvim integration";
           welcomeText = ''
             # R Nix Development Environment
 
