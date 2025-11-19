@@ -24,6 +24,7 @@
           f {
             pkgs = import inputs.nixpkgs {
               inherit system;
+              config.allowBroken = true;
               overlays = [ inputs.self.overlays.default ];
             };
           }
@@ -55,6 +56,7 @@
           cli
           cyclocomp
           fs
+          httpgd
           languageserver
           lintr
           nvimcom
