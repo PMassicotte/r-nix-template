@@ -49,9 +49,9 @@ rPackageList = with final.rPackages; [
 Then run:
 
 ```bash
-nix flake update              # update dependencies if needed
-nix run .#update-renv-lock    # update renv.lock to match Nix packages
-nix develop                   # or just reload if using direnv
+nix flake update           # update dependencies if needed
+nix run .#update-renv-lock # update renv.lock to match Nix packages
+nix develop                # or just reload if using direnv
 ```
 
 ### Updating renv.lock
@@ -63,7 +63,6 @@ nix run .#update-renv-lock
 ```
 
 This maintains compatibility with `renv`-based workflows by keeping `renv.lock` synchronized with your Nix environment.
-
 
 ## Usage
 
