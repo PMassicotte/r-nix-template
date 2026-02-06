@@ -51,10 +51,10 @@ for (i in seq_len(nrow(user_packages))) {
   
   # Add optional fields if available
   if (!is.null(pkg_desc)) {
-    if (!is.na(pkg_desc$RemoteType) && !is.null(pkg_desc$RemoteType)) {
+    if (!is.null(pkg_desc$RemoteType) && !is.na(pkg_desc$RemoteType)) {
       package_entry$Source <- pkg_desc$RemoteType
     }
-    if (!is.na(pkg_desc$Repository) && !is.null(pkg_desc$Repository)) {
+    if (!is.null(pkg_desc$Repository) && !is.na(pkg_desc$Repository)) {
       package_entry$Repository <- pkg_desc$Repository
     }
   }
