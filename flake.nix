@@ -127,8 +127,7 @@
             - Pre-configured .lintr file with opinionated linting rules
 
             ## Using renv
-            - Use `renv` to manage project-specific R package versions
-            - Run `nix run .#update-renv-lock` to update renv.lock
+            - Run `nix run .#update-renv-lock` to update renv.lock based on currently installed R packages
               - This will snapshot the currently installed R packages into renv.lock
               - For non nix users, use `renv::init()` to get started
           '';
