@@ -81,8 +81,11 @@
             
             shellHook = ''
               # Update renv.lock automatically when entering the shell
-              echo "Updating renv.lock with current R packages..."
-              ${pkgs.wrappedR}/bin/Rscript ${./generate-renv-lock.R} 2>/dev/null || true
+              # Only update if flake.lock has been modified more recently than renv.lock
+              if [ ! -f renv.lock ] || [ flake.lock -nt renv.lock ]; then
+                echo "Updating renv.lock with current R packages..."
+                ${pkgs.wrappedR}/bin/Rscript ${./generate-renv-lock.R} || echo "Warning: Failed to update renv.lock"
+              fi
             '';
           };
         }
