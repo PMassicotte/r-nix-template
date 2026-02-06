@@ -78,15 +78,29 @@
               wrappedR # R with packages for LSP
               wrappedRadian # radian with packages for interactive use
             ];
-            
-            shellHook = ''
-              # Update renv.lock automatically when entering the shell
-              # Only update if flake.lock has been modified more recently than renv.lock
-              if [ ! -f renv.lock ] || [ flake.lock -nt renv.lock ]; then
-                echo "Updating renv.lock with current R packages..."
-                ${pkgs.wrappedR}/bin/Rscript ${./generate-renv-lock.R} || echo "Warning: Failed to update renv.lock"
-              fi
-            '';
+          };
+        }
+      );
+
+      apps = forEachSupportedSystem (
+        { pkgs }:
+        {
+          update-renv-lock = {
+            type = "app";
+            program = "${pkgs.writeShellScript "update-renv-lock" ''
+              set -e
+              echo "Updating renv.lock with current R packages..."
+              ${pkgs.wrappedR}/bin/Rscript -e '
+                if (!file.exists("renv.lock")) {
+                  message("Initializing renv and creating renv.lock...")
+                  renv::init(bare = TRUE, restart = FALSE)
+                } else {
+                  message("Updating renv.lock...")
+                }
+                renv::snapshot(prompt = FALSE, force = TRUE)
+                message("Successfully updated renv.lock")
+              '
+            ''}";
           };
         }
       );
