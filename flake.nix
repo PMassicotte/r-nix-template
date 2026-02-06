@@ -91,35 +91,17 @@
               set -e
               echo "Updating renv.lock with current R packages..."
 
-              FIRST_RUN=false
-              if [ ! -f "renv.lock" ]; then
-                FIRST_RUN=true
-              fi
-
               ${pkgs.wrappedR}/bin/Rscript -e '
-                if (!file.exists("renv.lock")) {
-                  message("Initializing renv and creating renv.lock...")
-                  renv::init(bare = TRUE, restart = FALSE)
-                  # Comment out source() in .Rprofile - Nix manages packages
-                  if (file.exists(".Rprofile")) {
-                    content <- readLines(".Rprofile")
-                    content <- gsub("^source\\\\(", "# source(", content)
-                    writeLines(content, ".Rprofile")
-                    message("Commented out renv activation in .Rprofile (Nix manages packages)")
-                  }
-                } else {
-                  message("Updating renv.lock...")
-                }
-                renv::snapshot(prompt = FALSE, force = TRUE)
+                message("Creating renv.lock from installed packages...")
+                # Get all installed packages and create lockfile directly
+                renv::snapshot(
+                  lockfile = "renv.lock",
+                  type = "all",
+                  prompt = FALSE,
+                  force = TRUE
+                )
                 message("Successfully updated renv.lock")
               '
-
-              # Remove renv/ directory after first run - Nix manages packages, we only need the lockfile
-              if [ "$FIRST_RUN" = true ] && [ -d "renv" ]; then
-                chmod -R u+w renv 2>/dev/null || true
-                rm -rf renv
-                echo "Removed renv/ directory (Nix manages packages)"
-              fi
             ''}";
           };
         }
