@@ -53,15 +53,9 @@ nix flake update # if needed
 nix develop      # or just reload if using direnv
 ```
 
-### Keeping renv.lock in sync
+### Automatic renv.lock synchronization
 
-After updating packages or running `nix flake update`, you can generate/update an `renv.lock` file that matches your Nix environment:
-
-```bash
-nix run .#update-renv-lock
-```
-
-This creates an `renv.lock` file with all the R packages currently available in your Nix environment, allowing you to maintain compatibility with `renv`-based workflows.
+The `renv.lock` file is automatically updated when you enter the development shell (via `nix develop` or direnv). This ensures your `renv.lock` always stays in sync with the R packages defined in the Nix flake, maintaining compatibility with `renv`-based workflows.
 
 
 ## Usage

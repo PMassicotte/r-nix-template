@@ -57,10 +57,10 @@
           cyclocomp
           fs
           httpgd
-          jsonlite
           languageserver
           lintr
           nvimcom
+          renv
         ];
 
         # Create rWrapper with packages (for LSP and R.nvim)
@@ -78,20 +78,12 @@
               wrappedR # R with packages for LSP
               wrappedRadian # radian with packages for interactive use
             ];
-          };
-        }
-      );
-
-      apps = forEachSupportedSystem (
-        { pkgs }:
-        {
-          update-renv-lock = {
-            type = "app";
-            program = "${pkgs.writeShellScript "update-renv-lock" ''
-              set -e
-              echo "Updating renv.lock file with current R packages..."
-              ${pkgs.wrappedR}/bin/Rscript ${./generate-renv-lock.R}
-            ''}";
+            
+            shellHook = ''
+              # Update renv.lock automatically when entering the shell
+              echo "Updating renv.lock with current R packages..."
+              ${pkgs.wrappedR}/bin/Rscript ${./generate-renv-lock.R} 2>/dev/null || true
+            '';
           };
         }
       );
