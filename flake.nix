@@ -98,6 +98,7 @@
                   lockfile = "renv.lock",
                   type = "all",
                   prompt = FALSE,
+                  exclude = "nvimcom",
                   force = TRUE
                 )
                 message("Successfully updated renv.lock")
@@ -124,6 +125,12 @@
             - radian (modern R console)
             - Configured for R.nvim integration
             - Pre-configured .lintr file with opinionated linting rules
+
+            ## Using renv
+            - Use `renv` to manage project-specific R package versions
+            - Run `nix run .#update-renv-lock` to update renv.lock
+              - This will snapshot the currently installed R packages into renv.lock
+              - For non nix users, use `renv::init()` to get started
           '';
         };
       };
