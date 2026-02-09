@@ -94,15 +94,17 @@
               ${pkgs.wrappedR}/bin/Rscript -e '
                 message("Creating renv.lock from installed packages...")
                 # Get all installed packages and create lockfile directly
-                renv::snapshot(
-                  lockfile = "renv.lock",
-                  type = "all",
-                  prompt = FALSE,
-                  exclude = "nvimcom",
-                  force = TRUE
-                )
+                renv::init()
                 message("Successfully updated renv.lock")
               '
+
+              # Comment out source("renv/activate.R") in .Rprofile since
+              # packages are managed by Nix, not renv
+              if [ -f .Rprofile ]; then
+                ${pkgs.gnused}/bin/sed -i 's/^source("renv\/activate.R")$/# source("renv\/activate.R")/' .Rprofile
+              fi
+
+
             ''}";
           };
         }
