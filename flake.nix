@@ -93,8 +93,8 @@
 
               ${pkgs.wrappedR}/bin/Rscript -e '
                 message("Creating renv.lock from installed packages...")
-                # Get all installed packages and create lockfile directly
-                renv::init()
+                renv::settings$snapshot.type("all")
+                renv::init(force = TRUE)
                 message("Successfully updated renv.lock")
               '
 
