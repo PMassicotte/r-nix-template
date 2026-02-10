@@ -60,7 +60,6 @@
           languageserver
           lintr
           nvimcom
-          renv
         ];
 
         # Create rWrapper with packages (for LSP and R.nvim)
@@ -82,34 +81,6 @@
         }
       );
 
-      apps = forEachSupportedSystem (
-        { pkgs }:
-        {
-          update-renv-lock = {
-            type = "app";
-            program = "${pkgs.writeShellScript "update-renv-lock" ''
-              set -e
-              echo "Updating renv.lock with current R packages..."
-
-              ${pkgs.wrappedR}/bin/Rscript -e '
-                message("Creating renv.lock from installed packages...")
-                renv::settings$snapshot.type("all")
-                renv::init(force = TRUE)
-                message("Successfully updated renv.lock")
-              '
-
-              # Comment out source("renv/activate.R") in .Rprofile since
-              # packages are managed by Nix, not renv
-              if [ -f .Rprofile ]; then
-                ${pkgs.gnused}/bin/sed -i 's/^source("renv\/activate.R")$/# source("renv\/activate.R")/' .Rprofile
-              fi
-
-
-            ''}";
-          };
-        }
-      );
-
       templates = {
         default = {
           path = ./.;
@@ -127,11 +98,6 @@
             - radian (modern R console)
             - Configured for R.nvim integration
             - Pre-configured .lintr file with opinionated linting rules
-
-            ## Using renv
-            - Run `nix run .#update-renv-lock` to update renv.lock based on currently installed R packages
-              - This will snapshot the currently installed R packages into renv.lock
-              - For non nix users, use `renv::init()` to get started
           '';
         };
       };

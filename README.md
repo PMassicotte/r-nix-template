@@ -50,19 +50,8 @@ Then run:
 
 ```bash
 nix flake update           # update dependencies if needed
-nix run .#update-renv-lock # update renv.lock to match Nix packages
 nix develop                # or just reload if using direnv
 ```
-
-### Updating renv.lock
-
-After running `nix flake update` or modifying packages in `flake.nix`, update the `renv.lock` file to match:
-
-```bash
-nix run .#update-renv-lock
-```
-
-This maintains compatibility with `renv`-based workflows by keeping `renv.lock` synchronized with your Nix environment.
 
 ## Usage
 
