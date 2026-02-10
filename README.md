@@ -49,8 +49,8 @@ rPackageList = with final.rPackages; [
 Then run:
 
 ```bash
-nix flake update           # update dependencies if needed
-nix develop                # or just reload if using direnv
+nix flake update # update dependencies if needed
+nix develop      # or just reload if using direnv
 ```
 
 ## Usage
@@ -73,4 +73,44 @@ You can use this as a template for new R projects:
 
 ```bash
 nix flake init -t github:PMassicotte/r-nix-template
+```
+
+## Building Quarto with nix
+
+Use this GH Action workflow to render and publish your Quarto site to GitHub Pages:
+
+```yml
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+
+name: Quarto Publish
+
+jobs:
+  build-deploy:
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Install Nix
+        uses: DeterminateSystems/nix-installer-action@main
+
+      - name: Setup Nix cache
+        uses: DeterminateSystems/magic-nix-cache-action@main
+
+      - name: Configure git
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Render and Publish
+        run: |
+          nix develop --command quarto publish gh-pages index.qmd --no-browser --no-prompt
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 ```
