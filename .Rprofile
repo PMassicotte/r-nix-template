@@ -35,7 +35,7 @@ options(
     codeActionProvider = FALSE,
     documentFormattingProvider = FALSE,
     documentRangeFormattingProvider = FALSE,
-    renameProvider = FALSE
+    renameProvider = TRUE
   ),
   browser = "/usr/bin/firefox" # nolint
 )
