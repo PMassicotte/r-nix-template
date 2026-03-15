@@ -31,7 +31,7 @@
         );
     in
     {
-      overlays.default = final: prev: rec {
+      overlays.default = final: prev: {
         # Build nvimcom manually from R.nvim source
         nvimcom = final.rPackages.buildRPackage {
           name = "nvimcom";
@@ -50,32 +50,26 @@
             maintainers = [ ];
           };
         };
-
-        # Shared R package list for both wrappers
-        rPackageList = with final.rPackages; [
-          cli
-          cyclocomp
-          fs
-          httpgd
-          languageserver
-          lintr
-          nvimcom
-        ];
-
-        # Create rWrapper with packages (for LSP and R.nvim)
-        wrappedR = final.rWrapper.override { packages = rPackageList; };
-
-        # Create radianWrapper with same packages (for interactive use)
-        wrappedRadian = final.radianWrapper.override { packages = rPackageList; };
       };
 
       devShells = forEachSupportedSystem (
         { pkgs }:
+        let
+          rPackageList = with pkgs.rPackages; [
+            cli
+            cyclocomp
+            fs
+            httpgd
+            languageserver
+            lintr
+            pkgs.nvimcom
+          ];
+        in
         {
           default = pkgs.mkShellNoCC {
-            packages = with pkgs; [
-              wrappedR # R with packages for LSP
-              wrappedRadian # radian with packages for interactive use
+            packages = [
+              (pkgs.rWrapper.override { packages = rPackageList; }) # R with packages for LSP
+              (pkgs.radianWrapper.override { packages = rPackageList; }) # radian with packages for interactive use
             ];
           };
         }

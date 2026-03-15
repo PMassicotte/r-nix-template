@@ -21,23 +21,22 @@ options(
   # Need absolute path to work
   lintr.linter_file = ".lintr.R",
 
-  # Disable completion from the language server
+  # Restrict language server to diagnostics (linting) only
   languageserver.server_capabilities = list(
     completionProvider = FALSE,
     completionItemResolve = FALSE,
     hoverProvider = FALSE,
-    signatureHelpProvider = FALSE
+    signatureHelpProvider = FALSE,
+    definitionProvider = FALSE,
+    referencesProvider = FALSE,
+    documentHighlightProvider = FALSE,
+    documentSymbolProvider = FALSE,
+    workspaceSymbolProvider = FALSE,
+    codeActionProvider = FALSE,
+    documentFormattingProvider = FALSE,
+    documentRangeFormattingProvider = FALSE,
+    renameProvider = FALSE
   ),
-  languageserver.formatting_style = function(options) {
-    styler::tidyverse_style(
-      scope = "indention",
-      indent_by = options[["tabSize"]]
-    )
-  },
-
-  # Do not use rich documentation, as it causes strange formatting issues with
-  # lspsaga
-  languageserver.rich_documentation = FALSE,
   browser = "/usr/bin/firefox" # nolint
 )
 
