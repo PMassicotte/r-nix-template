@@ -30,9 +30,10 @@ This will drop you into a shell with R and all packages available.
 ## What's Included
 
 - **R** with the following packages:
-  - languageserver (for LSP support)
   - nvimcom (for R.nvim integration)
 - **radian** - A modern R console with syntax highlighting and auto-completion
+- **arf** - A modern Rust-based R console
+- **jarl** - A fast R linter
 
 ## Customization
 

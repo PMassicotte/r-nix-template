@@ -40,8 +40,8 @@
     {
       overlays.default = final: prev: rec {
         # Build arf (modern Rust-based R console) from the flake input.
-        # cargoLock reads Cargo.lock directly from the source so no manual hash updates are needed.
         # To upgrade: nix flake update arf  (or just: nix flake update)
+        # If outputHashes need updating after upgrade, use lib.fakeHash → run `nix develop` → paste the "got: sha256-..." value.
         arf = final.rustPlatform.buildRustPackage {
           pname = "arf";
           version = inputs.arf.shortRev or "unstable";
@@ -50,9 +50,6 @@
 
           cargoLock = {
             lockFile = "${inputs.arf}/Cargo.lock";
-            # Git deps not on crates.io need explicit hashes. If `nix flake update arf`
-            # errors with "No hash found for X-Y.Z": set that key to lib.fakeHash,
-            # run `nix develop`, then paste the "got: sha256-..." value here.
             outputHashes = {
               "crossterm-0.29.0" = "sha256-SLgsOq875vQXnKxoAfG5PvEegpRJrxXCD2CV1jyI9TQ=";
               "rd-parser-0.1.0" = "sha256-gb3Q05D+qBWcjLnR5INMb5mn910KsSt5Tk/PW8EnUps=";
@@ -94,6 +91,20 @@
             maintainers = [ ];
           };
         };
+
+        # Shared R package list for both wrappers
+        rPackageList = with final.rPackages; [
+          cli
+          fs
+          httpgd
+          nvimcom
+        ];
+
+        # Create rWrapper with packages (for LSP and R.nvim)
+        wrappedR = final.rWrapper.override { packages = rPackageList; };
+
+        # Create radianWrapper with same packages (for interactive use)
+        wrappedRadian = final.radianWrapper.override { packages = rPackageList; };
       };
 
       devShells = forEachSupportedSystem (
@@ -115,6 +126,7 @@
               wrappedR # R with packages for LSP
               wrappedRadian # radian with packages for interactive use
               arf # modern Rust-based R console
+              jarl # fast R linter (from nixpkgs)
             ];
 
             shellHook = ''
@@ -138,13 +150,14 @@
             - Enter the shell with `nix develop`
 
             ## What's included
-            - R with languageserver, nvimcom, lintr, fs, and cli
+            - R with nvimcom, fs, cli, and httpgd
             - radian (modern R console)
             - arf (modern Rust-based R console)
+            - jarl (fast R linter)
             - Configured for R.nvim integration
-            - Pre-configured .lintr file with opinionated linting rules
           '';
         };
       };
     };
 }
+

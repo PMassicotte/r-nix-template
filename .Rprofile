@@ -16,27 +16,7 @@ options(
       R.version[["os"]]
     )
   ),
-  lintr.object_usage_linter = NULL,
 
-  # Need absolute path to work
-  lintr.linter_file = ".lintr.R",
-
-  # Restrict language server to diagnostics (linting) only
-  languageserver.server_capabilities = list(
-    completionProvider = FALSE,
-    completionItemResolve = FALSE,
-    hoverProvider = FALSE,
-    signatureHelpProvider = FALSE,
-    definitionProvider = FALSE,
-    referencesProvider = FALSE,
-    documentHighlightProvider = FALSE,
-    documentSymbolProvider = FALSE,
-    workspaceSymbolProvider = FALSE,
-    codeActionProvider = FALSE,
-    documentFormattingProvider = FALSE,
-    documentRangeFormattingProvider = FALSE,
-    renameProvider = TRUE
-  ),
   browser = "/usr/bin/firefox" # nolint
 )
 
