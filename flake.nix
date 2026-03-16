@@ -8,9 +8,16 @@
     flake = false;
   };
 
+  # Track arf on main; run `nix flake update arf` (or `nix flake update`) to upgrade
+  inputs.arf = {
+    url = "github:eitsupi/arf";
+    flake = false;
+  };
+
   outputs =
     { self, ... }@inputs:
     let
+      lib = inputs.nixpkgs.lib;
       supportedSystems = [
         "x86_64-linux"
         "aarch64-linux"
@@ -31,7 +38,44 @@
         );
     in
     {
-      overlays.default = final: prev: {
+      overlays.default = final: prev: rec {
+        # Build arf (modern Rust-based R console) from the flake input.
+        # cargoLock reads Cargo.lock directly from the source so no manual hash updates are needed.
+        # To upgrade: nix flake update arf  (or just: nix flake update)
+        arf = final.rustPlatform.buildRustPackage {
+          pname = "arf";
+          version = inputs.arf.shortRev or "unstable";
+
+          src = inputs.arf;
+
+          cargoLock = {
+            lockFile = "${inputs.arf}/Cargo.lock";
+            # Git deps not on crates.io need explicit hashes. If `nix flake update arf`
+            # errors with "No hash found for X-Y.Z": set that key to lib.fakeHash,
+            # run `nix develop`, then paste the "got: sha256-..." value here.
+            outputHashes = {
+              "crossterm-0.29.0" = "sha256-SLgsOq875vQXnKxoAfG5PvEegpRJrxXCD2CV1jyI9TQ=";
+              "rd-parser-0.1.0" = "sha256-gb3Q05D+qBWcjLnR5INMb5mn910KsSt5Tk/PW8EnUps=";
+              "rd2qmd-core-0.1.0" = "sha256-gb3Q05D+qBWcjLnR5INMb5mn910KsSt5Tk/PW8EnUps=";
+              "rd2qmd-mdast-0.1.0" = "sha256-gb3Q05D+qBWcjLnR5INMb5mn910KsSt5Tk/PW8EnUps=";
+              "tree-sitter-r-1.2.0" = "sha256-H4iK2p4xXjP6gGrOP/qpHQCiO3Jyy0jmb8u29RM0sBg=";
+            };
+          };
+
+          # Two cd/tilde tests fail in the Nix sandbox (no $HOME), skip them
+          doCheck = false;
+
+          buildInputs = with final; lib.optionals stdenv.isDarwin [ darwin.apple_sdk.frameworks.Security ];
+          nativeBuildInputs = with final; [ pkg-config ];
+
+          meta = {
+            description = "A modern Rust-based R console with fuzzy history, tree-sitter highlighting, and vi/emacs modes";
+            homepage = "https://github.com/eitsupi/arf";
+            license = lib.licenses.mit;
+            mainProgram = "arf";
+          };
+        };
+
         # Build nvimcom manually from R.nvim source
         nvimcom = final.rPackages.buildRPackage {
           name = "nvimcom";
@@ -67,10 +111,16 @@
         in
         {
           default = pkgs.mkShellNoCC {
-            packages = [
-              (pkgs.rWrapper.override { packages = rPackageList; }) # R with packages for LSP
-              (pkgs.radianWrapper.override { packages = rPackageList; }) # radian with packages for interactive use
+            packages = with pkgs; [
+              wrappedR # R with packages for LSP
+              wrappedRadian # radian with packages for interactive use
+              arf # modern Rust-based R console
             ];
+
+            shellHook = ''
+              export R_HOME=$(R RHOME)
+              export R_LIBS_SITE=$(grep -oP "'/nix/store/[^']+/library'" "$(command -v R)" | tr -d "'" | sort -u | paste -sd: -)
+            '';
           };
         }
       );
@@ -90,6 +140,7 @@
             ## What's included
             - R with languageserver, nvimcom, lintr, fs, and cli
             - radian (modern R console)
+            - arf (modern Rust-based R console)
             - Configured for R.nvim integration
             - Pre-configured .lintr file with opinionated linting rules
           '';
