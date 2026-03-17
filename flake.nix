@@ -109,17 +109,6 @@
 
       devShells = forEachSupportedSystem (
         { pkgs }:
-        let
-          rPackageList = with pkgs.rPackages; [
-            cli
-            cyclocomp
-            fs
-            httpgd
-            languageserver
-            lintr
-            pkgs.nvimcom
-          ];
-        in
         {
           default = pkgs.mkShellNoCC {
             packages = with pkgs; [
@@ -160,4 +149,3 @@
       };
     };
 }
-
