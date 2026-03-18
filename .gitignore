@@ -1,2 +1,3 @@
 flake.lock
 .direnv/
+.r-libs/
