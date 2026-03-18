@@ -1,117 +1,70 @@
-# R Nix Development Environment
+# nix-templates
 
-A Nix-flake-based R development environment with nvimcom and R.nvim integration.
+A collection of Nix flake templates for reproducible development environments.
 
 ## Prerequisites
 
 - Nix with flakes enabled
 - (Optional) direnv for automatic environment activation
 
-## Quick Start
+## Available templates
 
-### Using direnv (recommended)
+### `r-project` — R development environment
 
-If you have direnv installed:
+R environment with R.nvim and Neovim integration.
 
-```bash
-direnv allow
-```
-
-The environment will activate automatically when you enter the directory.
-
-### Using nix develop
+**Includes:** R, radian, arf, jarl, httpgd, data.table
 
 ```bash
-nix develop
+nix flake init -t github:PMassicotte/nix-templates#r-project
 ```
 
-This will drop you into a shell with R and all packages available.
+#### Customization
 
-## What's Included
-
-- **R** with the following packages:
-  - nvimcom (for R.nvim integration)
-- **radian** - A modern R console with syntax highlighting and auto-completion
-- **arf** - A modern Rust-based R console
-- **jarl** - A fast R linter
-
-## Customization
-
-To add more R packages, edit `flake.nix` and modify the `rPackageList`:
+Add R packages by editing `flake.nix` and modifying `projectRPackages`:
 
 ```nix
-rPackageList = with final.rPackages; [
-  languageserver
-  nvimcom
-  # Add your packages here
+projectRPackages = with final.rPackages; [
+  cli
+  fs
+  # add your packages here
 ];
 ```
 
-Then run:
+---
+
+### `rust-cli` — Rust CLI
+
+Rust CLI project using crane (build) and rust-overlay (toolchain).
+
+**Includes:** cargo, clippy, rustfmt, rust-analyzer (stable latest, pinned)
 
 ```bash
-nix flake update # update dependencies if needed
-nix develop      # or just reload if using direnv
+nix flake init -t github:PMassicotte/nix-templates#rust-cli
 ```
 
-## Usage
+After init, rename the package in `Cargo.toml` from `my-cli` to your project name.
 
-### Start R
+#### Commands
+
+| Command                  | What it does                          |
+| ------------------------ | ------------------------------------- |
+| `nix build`              | Compile the project                   |
+| `nix run`                | Build and run                         |
+| `nix develop`            | Enter dev shell                       |
+| `nix profile install .#` | Install binary to your PATH           |
+| `nix flake update`       | Update all inputs (Rust, crane, etc.) |
+
+---
+
+## Common to all templates
+
+After `nix flake init`:
 
 ```bash
-R
+direnv allow # activate automatically with direnv (recommended)
+# or
+nix develop # enter the shell manually
 ```
 
-### Start radian (enhanced R console)
-
-```bash
-radian
-```
-
-## Using as a Template
-
-You can use this as a template for new R projects:
-
-```bash
-nix flake init -t github:PMassicotte/r-nix-template
-```
-
-## Building Quarto with nix
-
-Use this GH Action workflow to render and publish your Quarto site to GitHub Pages:
-
-```yml
-on:
-  workflow_dispatch:
-  push:
-    branches:
-      - main
-
-name: Quarto Publish
-
-jobs:
-  build-deploy:
-    runs-on: ubuntu-24.04
-    permissions:
-      contents: write
-    steps:
-      - name: Check out repository
-        uses: actions/checkout@v4
-
-      - name: Install Nix
-        uses: DeterminateSystems/nix-installer-action@main
-
-      - name: Setup Nix cache
-        uses: DeterminateSystems/magic-nix-cache-action@main
-
-      - name: Configure git
-        run: |
-          git config --global user.name "github-actions[bot]"
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
-
-      - name: Render and Publish
-        run: |
-          nix develop --command quarto publish gh-pages index.qmd --no-browser --no-prompt
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-```
+Run `nix flake update` periodically to update pinned dependencies.

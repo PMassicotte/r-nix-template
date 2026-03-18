@@ -1,0 +1,58 @@
+options(
+  repos = c(
+    RSPM = "https://packagemanager.posit.co/cran/__linux__/noble/latest",
+    CRAN = "https://cran.rstudio.com/"
+  ),
+  pillar.sigfig = 5L,
+  pillar.bold = TRUE,
+  pillar.max_footer_lines = Inf,
+  HTTPUserAgent = sprintf(
+    "R/%s R (%s)", # nolint
+    getRversion(),
+    paste(
+      getRversion(),
+      R.version[["platform"]],
+      R.version[["arch"]],
+      R.version[["os"]]
+    )
+  ),
+
+  browser = "/usr/bin/firefox" # nolint
+)
+
+# Set default theme and color theme for ggplot2
+setHook(packageEvent("ggplot2", "attach"), function(...) {
+  ggplot2::theme_set(ggplot2::theme_minimal())
+  options(ggplot2.continuous.colour = "viridis")
+  options(ggplot2.continuous.fill = "viridis")
+})
+
+# Configure the behavior of httpgd. Basically, I want to keep the focus on the
+# terminal with it opens the device in Firefox
+if (interactive() && requireNamespace("httpgd", quietly = TRUE)) {
+  options(device = function() {
+    httpgd::hgd()
+    url <- httpgd::hgd_url()
+    system(
+      sprintf(
+        "zsh -c 'nohup firefox --new-tab \"%s\" >/dev/null 2>&1 & sleep 0.1 && i3-msg \"focus next\"'",
+        url
+      ),
+      wait = FALSE,
+      ignore.stdout = TRUE,
+      ignore.stderr = TRUE
+    )
+  })
+}
+
+options(browser = function(url) {
+  system(
+    sprintf(
+      "zsh -c 'nohup firefox --new-tab \"%s\" >/dev/null 2>&1 & sleep 0.1 && i3-msg \"focus next\"'",
+      url
+    ),
+    wait = FALSE,
+    ignore.stdout = TRUE,
+    ignore.stderr = TRUE
+  )
+})
