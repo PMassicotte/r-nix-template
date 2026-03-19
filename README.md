@@ -57,6 +57,31 @@ After init, rename the package in `Cargo.toml` from `my-cli` to your project nam
 
 ---
 
+### Working on existing (non-flake) Rust projects
+
+If you fork a project that doesn't use Nix, you can still use this template's dev environment without polluting the upstream repo.
+
+1. Copy `flake.nix` and `.envrc` from this template into the project root.
+2. Exclude them from git using your local gitignore (so they never appear in your PR):
+
+```bash
+echo "flake.nix" >>.git/info/exclude
+echo "flake.lock" >>.git/info/exclude
+echo ".envrc" >>.git/info/exclude
+```
+
+3. Activate the environment:
+
+```bash
+direnv allow
+# or
+nix develop
+```
+
+The Rust toolchain is now available and `cargo` will use the project's own `Cargo.toml` as usual.
+
+---
+
 ## Common to all templates
 
 After `nix flake init`:
