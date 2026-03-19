@@ -19,16 +19,16 @@ R environment with R.nvim and Neovim integration.
 nix flake init -t github:PMassicotte/nix-templates#r-project
 ```
 
-#### Customization
+---
 
-Add R packages by editing `flake.nix` and modifying `projectRPackages`:
+### `r-package-dev` — R package development
 
-```nix
-projectRPackages = with final.rPackages; [
-  cli
-  fs
-  # add your packages here
-];
+Full-featured environment for developing R packages with Nix reproducibility.
+
+**Includes:** devtools, roxygen2, testthat, usethis, pkgdown, rcmdcheck, urlchecker, arf, jarl, httpgd
+
+```bash
+nix flake init -t github:PMassicotte/nix-templates#r-package-dev
 ```
 
 ---
