@@ -13,7 +13,7 @@ A collection of Nix flake templates for reproducible development environments.
 
 R environment with R.nvim and Neovim integration.
 
-**Includes:** R, radian, arf, jarl, httpgd, data.table
+**Includes:** R, arf, jarl, httpgd, data.table
 
 ```bash
 nix flake init -t github:PMassicotte/nix-templates#r-project

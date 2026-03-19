@@ -86,8 +86,6 @@
         # Create rWrapper with packages (for LSP and R.nvim)
         wrappedR = final.rWrapper.override { packages = rPackageList; };
 
-        # Create radianWrapper with same packages (for interactive use)
-        wrappedRadian = final.radianWrapper.override { packages = rPackageList; };
       };
 
       devShells = forEachSupportedSystem (
@@ -96,7 +94,6 @@
           default = pkgs.mkShell {
             packages = with pkgs; [
               wrappedR # R with packages for LSP
-              wrappedRadian # radian with packages for interactive use
               arf # modern Rust-based R console
               jarl # fast R linter (from nixpkgs)
             ];

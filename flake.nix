@@ -21,7 +21,6 @@
 
             ## What's included
             - R with httpgd, data.table, cli, and fs
-            - radian (modern R console)
             - arf (modern Rust-based R console)
             - jarl (fast R linter)
             - nvimcom auto-built by R.nvim into .r-libs/ on first use
@@ -41,7 +40,7 @@
 
             ## What's included
             - R with devtools, roxygen2, testthat, usethis, pak, and pkgdown
-            - radian and arf (modern R consoles)
+            - arf (modern Rust-based R console)
             - jarl (fast R linter)
             - R_QPDF set for R CMD check
           '';

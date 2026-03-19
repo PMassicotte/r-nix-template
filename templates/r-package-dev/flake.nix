@@ -117,10 +117,9 @@
         rPackageList = runtimeDeps ++ githubDeps ++ devPackages;
 
         # ==============================================================================
-        # WRAP R AND RADIAN WITH ALL PACKAGES
+        # WRAP R WITH ALL PACKAGES
         # ==============================================================================
         wrappedR = final.rWrapper.override { packages = rPackageList; };
-        wrappedRadian = final.radianWrapper.override { packages = rPackageList; };
       };
 
       devShells = forEachSupportedSystem (
@@ -129,7 +128,6 @@
           default = pkgs.mkShell {
             packages = with pkgs; [
               wrappedR # R with packages for LSP
-              wrappedRadian # radian with packages for interactive use
               arf # modern Rust-based R console
               jarl # fast R linter (from nixpkgs)
               qpdf # PDF compression checks
