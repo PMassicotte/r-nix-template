@@ -101,7 +101,7 @@
 
             shellHook = ''
               export R_HOME=$(R RHOME)
-              export R_LIBS_SITE=$(grep -oP "'/nix/store/[^']+/library'" "$(command -v R)" | tr -d "'" | sort -u | paste -sd: -)
+              export R_LIBS_SITE=$(strings "$(command -v R)" | grep -oP '/nix/store/[^:]+/library' | sort -u | paste -sd: -)
               export R_LIBS_USER="$PWD/.r-libs"
               mkdir -p "$R_LIBS_USER"
             '';
