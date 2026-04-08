@@ -36,20 +36,14 @@
       overlays.default = final: prev: rec {
         # Build arf (modern Rust-based R console) from the flake input.
         # To upgrade: nix flake update arf  (or just: nix flake update)
-        # If outputHashes need updating after upgrade, use lib.fakeHash -> run `nix develop` -> paste the "got: sha256-..." value.
+        # If cargoHash breaks after upgrade, set it to lib.fakeHash → run `nix develop` → paste the "got: sha256-..." value.
         arf = final.rustPlatform.buildRustPackage {
           pname = "arf";
           version = inputs.arf.shortRev or "unstable";
 
           src = inputs.arf;
 
-          cargoLock = {
-            lockFile = "${inputs.arf}/Cargo.lock";
-            outputHashes = {
-              "crossterm-0.29.0" = "sha256-SLgsOq875vQXnKxoAfG5PvEegpRJrxXCD2CV1jyI9TQ=";
-              "reedline-0.46.0" = "sha256-aYMnnX7dsiunnO/eh3SYP0V32qofpU8UuLrsyRYVVRM=";
-            };
-          };
+          cargoHash = "sha256-N5BsmDx8mR0PxJFTsr5bqbLJNZlyrJzL4O//vxoiELU=";
 
           # Two cd/tilde tests fail in the Nix sandbox (no $HOME), skip them
           doCheck = false;
